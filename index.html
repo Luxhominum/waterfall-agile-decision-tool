@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waterfall vs Agile | Scientific Decision Model & Matrix</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for Radar & Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- GSAP for Smooth Micro-Interactions -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            waterfall: '#3b82f6',
+                            waterfallDark: '#1d4ed8',
+                            agile: '#10b981',
+                            agileDark: '#047857',
+                            hybrid: '#f59e0b',
+                            dark: '#090d16',
+                            card: '#111827',
+                            border: '#1f293d',
+                            accent: '#6366f1'
+                        }
+                    },
+                    animation: {
+                        'spin-slow': 'spin 12s linear infinite',
+                        'pulse-subtle': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #090d16;
+            color: #f1f5f9;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+        .glow-radial {
+            background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.15) 0%, rgba(16, 185, 129, 0.05) 40%, transparent 70%);
+        }
+        .bento-card {
+            background: linear-gradient(180deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(12px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .bento-card:hover {
+            border-color: rgba(99, 102, 241, 0.35);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+        .tab-btn.active {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: #6366f1;
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+        }
+        input[type=range] {
+            accent-color: #6366f1;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-200 antialiased selection:bg-indigo-500 selection:text-white">
+
+    <div class="fixed inset-0 pointer-events-none glow-radial z-0"></div>
+
+    <div class="relative z-10 flex flex-col min-h-screen">
+
+        <!-- HEADER & NAVBAR -->
+        <header class="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-blue-500 to-emerald-400 p-[1px] flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                        <div class="w-full h-full bg-slate-950 rounded-[11px] flex items-center justify-center">
+                            <svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="font-bold text-base tracking-tight text-white flex items-center gap-2">
+                            <span>Project Decision Matrix</span>
+                            <span class="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-indigo-900/60 text-indigo-300 border border-indigo-700/50">Thesing et al. 2021</span>
+                        </div>
+                        <p class="text-xs text-slate-400 hidden sm:block" data-i18n="navSubtitle">Empirical Agile vs. Waterfall Decision Framework</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3 sm:gap-4">
+                    <nav class="hidden md:flex items-center p-1 bg-slate-900/80 border border-slate-800 rounded-xl">
+                        <button onclick="switchTab('framework')" class="tab-btn active px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white border border-transparent transition-all" data-tab="framework" data-i18n="tabComparison">Comparison</button>
+                        <button onclick="switchTab('flows')" class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white border border-transparent transition-all" data-tab="flows" data-i18n="tabFlows">Process Flows</button>
+                        <button onclick="switchTab('tradeoffs')" class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white border border-transparent transition-all" data-tab="tradeoffs" data-i18n="tabTradeoffs">Pros &amp; Cons</button>
+                        <button onclick="switchTab('decision')" class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white border border-transparent transition-all" data-tab="decision" data-i18n="tabAssessment">2-Step Assessment</button>
+                    </nav>
+
+                    <div class="flex items-center bg-slate-900 border border-slate-700/60 rounded-xl p-0.5">
+                        <button id="lang-en" onclick="setLanguage('en')" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-white bg-indigo-600 transition-all">EN</button>
+                        <button id="lang-id" onclick="setLanguage('id')" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all">ID</button>
+                    </div>
+
+                    <button onclick="switchTab('decision')" class="bg-gradient-to-r from-indigo-500 to-emerald-500 hover:from-indigo-600 hover:to-emerald-600 text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-md shadow-indigo-500/10 transition-all transform active:scale-95 flex items-center gap-1.5">
+                        <span data-i18n="btnRunAssessment">Start Assessment</span>
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex md:hidden overflow-x-auto no-scrollbar px-4 py-2 border-t border-slate-800/60 gap-2 bg-slate-950/60">
+                <button onclick="switchTab('framework')" class="tab-btn active px-3 py-1 text-xs whitespace-nowrap rounded-lg border border-slate-700/50 bg-slate-900" data-tab="framework" data-i18n="tabComparison">Comparison</button>
+                <button onclick="switchTab('flows')" class="tab-btn px-3 py-1 text-xs whitespace-nowrap rounded-lg border border-slate-700/50 bg-slate-900" data-tab="flows" data-i18n="tabFlows">Process Flows</button>
+                <button onclick="switchTab('tradeoffs')" class="tab-btn px-3 py-1 text-xs whitespace-nowrap rounded-lg border border-slate-700/50 bg-slate-900" data-tab="tradeoffs" data-i18n="tabTradeoffs">Pros &amp; Cons</button>
+                <button onclick="switchTab('decision')" class="tab-btn px-3 py-1 text-xs whitespace-nowrap rounded-lg border border-slate-700/50 bg-slate-900" data-tab="decision" data-i18n="tabAssessment">2-Step Assessment</button>
+            </div>
+        </header>
+
+        <!-- MAIN BODY -->
+        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 space-y-12">
+
+            <!-- HERO -->
+            <section class="relative text-center space-y-6 pt-4 pb-8 max-w-4xl mx-auto">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-indigo-500/30 bg-indigo-950/40 text-indigo-300 text-xs font-medium">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span data-i18n="heroPill">Peer-Reviewed Research Framework | Procedia Computer Science</span>
+                </div>
+
+                <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight" data-i18n="heroTitle">
+                    Agile vs. Waterfall <span class="bg-gradient-to-r from-blue-400 via-indigo-300 to-emerald-400 bg-clip-text text-transparent">Decision Engine</span>
+                </h1>
+
+                <p class="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed" data-i18n="heroSubtitle">
+                    Scientific multi-criteria decision tool grounded in empirical practitioner data from Theo Thesing et al. (2021) to select your optimal project methodology.
+                </p>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 text-left">
+                    <div class="bento-card p-3.5 rounded-xl border border-slate-800">
+                        <div class="text-[11px] font-mono text-slate-400 uppercase" data-i18n="statCriteria">15 Weighted Criteria</div>
+                        <div class="text-base font-bold text-white mt-0.5" data-i18n="statCriteriaVal">5 Core Dimensions</div>
+                    </div>
+                    <div class="bento-card p-3.5 rounded-xl border border-slate-800">
+                        <div class="text-[11px] font-mono text-slate-400 uppercase" data-i18n="statKo">Stage 1 Filter</div>
+                        <div class="text-base font-bold text-amber-400 mt-0.5" data-i18n="statKoVal">5 K.O. Knockouts</div>
+                    </div>
+                    <div class="bento-card p-3.5 rounded-xl border border-slate-800">
+                        <div class="text-[11px] font-mono text-slate-400 uppercase" data-i18n="statResearch">Empirical Study</div>
+                        <div class="text-base font-bold text-indigo-400 mt-0.5" data-i18n="statResearchVal">15 Industry Experts</div>
+                    </div>
+                    <div class="bento-card p-3.5 rounded-xl border border-slate-800">
+                        <div class="text-[11px] font-mono text-slate-400 uppercase" data-i18n="statOutput">Result Spectrum</div>
+                        <div class="text-base font-bold text-emerald-400 mt-0.5" data-i18n="statOutputVal">Waterfall / Agile / Hybrid</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 1: COMPARISON -->
+            <section id="tab-framework" class="tab-pane space-y-8">
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-800 pb-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white tracking-tight" data-i18n="compHeading">Comparative Architecture</h2>
+                        <p class="text-sm text-slate-400" data-i18n="compSubheading">Key operational differentiators evaluated across the 5 core project management dimensions.</p>
+                    </div>
+                    <div class="text-xs font-mono text-slate-400 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg">
+                        <span class="text-blue-400">● Classical (Plan-Driven)</span> &nbsp;|&nbsp; <span class="text-emerald-400">● Agile (Value-Driven)</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <!-- Scope -->
+                    <div class="bento-card p-6 rounded-2xl border-t-2 border-t-blue-500 flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-mono px-2 py-1 rounded bg-blue-950/60 text-blue-300 border border-blue-800/40" data-i18n="dimScope">Dimension 1: Scope (~36% Weight)</span>
+                                <svg class="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            </div>
+                            <h3 class="text-lg font-bold text-white" data-i18n="cardScopeTitle">Requirements &amp; Scope Dynamics</h3>
+                            <div class="space-y-3 text-xs leading-relaxed">
+                                <div class="p-3 rounded-xl bg-blue-950/20 border border-blue-900/30">
+                                    <div class="font-semibold text-blue-300 mb-1" data-i18n="wfLabel">Waterfall:</div>
+                                    <p class="text-slate-300" data-i18n="scopeWfDesc">Fixed upfront scope; detailed specifications signed off early. Low tolerance for requirement volatility.</p>
+                                </div>
+                                <div class="p-3 rounded-xl bg-emerald-950/20 border border-emerald-900/30">
+                                    <div class="font-semibold text-emerald-300 mb-1" data-i18n="agLabel">Agile:</div>
+                                    <p class="text-slate-300" data-i18n="scopeAgDesc">Emergent and evolving backlog. High dynamics embraced via short feedback cycles and incremental refinement.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Org -->
+                    <div class="bento-card p-6 rounded-2xl border-t-2 border-t-emerald-500 flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-mono px-2 py-1 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-800/40" data-i18n="dimOrg">Dimension 2: Organization (~27% Weight)</span>
+                                <svg class="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                            </div>
+                            <h3 class="text-lg font-bold text-white" data-i18n="cardOrgTitle">Culture &amp; Governance</h3>
+                            <div class="space-y-3 text-xs leading-relaxed">
+                                <div class="p-3 rounded-xl bg-blue-950/20 border border-blue-900/30">
+                                    <div class="font-semibold text-blue-300 mb-1" data-i18n="wfLabel">Waterfall:</div>
+                                    <p class="text-slate-300" data-i18n="orgWfDesc">Hierarchical command &amp; control. Stage-gate approvals, milestone tracking, and heavy formal documentation.</p>
+                                </div>
+                                <div class="p-3 rounded-xl bg-emerald-950/20 border border-emerald-900/30">
+                                    <div class="font-semibold text-emerald-300 mb-1" data-i18n="agLabel">Agile:</div>
+                                    <p class="text-slate-300" data-i18n="orgAgDesc">Decentralized, empowered product ownership. Focus on business value, working software, and psychological safety.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Team -->
+                    <div class="bento-card p-6 rounded-2xl border-t-2 border-t-indigo-500 flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-mono px-2 py-1 rounded bg-indigo-950/60 text-indigo-300 border border-indigo-800/40" data-i18n="dimTeam">Dimension 3: Team (~21% Weight)</span>
+                                <svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                            </div>
+                            <h3 class="text-lg font-bold text-white" data-i18n="cardTeamTitle">Team Structure &amp; Autonomy</h3>
+                            <div class="space-y-3 text-xs leading-relaxed">
+                                <div class="p-3 rounded-xl bg-blue-950/20 border border-blue-900/30">
+                                    <div class="font-semibold text-blue-300 mb-1" data-i18n="wfLabel">Waterfall:</div>
+                                    <p class="text-slate-300" data-i18n="teamWfDesc">Functional silos (architects, devs, testers). Large distributed teams with formalized document handoffs.</p>
+                                </div>
+                                <div class="p-3 rounded-xl bg-emerald-950/20 border border-emerald-900/30">
+                                    <div class="font-semibold text-emerald-300 mb-1" data-i18n="agLabel">Agile:</div>
+                                    <p class="text-slate-300" data-i18n="teamAgDesc">Small cross-functional teams (≤10 members). Self-organizing, high direct communication, full-time commitment.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Time -->
+                    <div class="bento-card p-6 rounded-2xl border-t-2 border-t-amber-500 flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-mono px-2 py-1 rounded bg-amber-950/60 text-amber-300 border border-amber-800/40" data-i18n="dimTime">Dimension 4: Time (~8% Weight)</span>
+                                <svg class="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                            <h3 class="text-lg font-bold text-white" data-i18n="cardTimeTitle">Timeline &amp; Go-Live Target</h3>
+                            <div class="space-y-3 text-xs leading-relaxed">
+                                <div class="p-3 rounded-xl bg-blue-950/20 border border-blue-900/30">
+                                    <div class="font-semibold text-blue-300 mb-1" data-i18n="wfLabel">Waterfall:</div>
+                                    <p class="text-slate-300" data-i18n="timeWfDesc">Single final deployment at the end of the project cycle. Strict schedule baseline adherence.</p>
+                                </div>
+                                <div class="p-3 rounded-xl bg-emerald-950/20 border border-emerald-900/30">
+                                    <div class="font-semibold text-emerald-300 mb-1" data-i18n="agLabel">Agile:</div>
+                                    <p class="text-slate-300" data-i18n="timeAgDesc">Frequent sprint cadences (1-4 weeks). Continuous value release; flexible MVP time-to-market.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cost -->
+                    <div class="bento-card p-6 rounded-2xl border-t-2 border-t-purple-500 flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-mono px-2 py-1 rounded bg-purple-950/60 text-purple-300 border border-purple-800/40" data-i18n="dimCost">Dimension 5: Cost (~8% Weight)</span>
+                                <svg class="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                            <h3 class="text-lg font-bold text-white" data-i18n="cardCostTitle">Budget &amp; Contracting Model</h3>
+                            <div class="space-y-3 text-xs leading-relaxed">
+                                <div class="p-3 rounded-xl bg-blue-950/20 border border-blue-900/30">
+                                    <div class="font-semibold text-blue-300 mb-1" data-i18n="wfLabel">Waterfall:</div>
+                                    <p class="text-slate-300" data-i18n="costWfDesc">Fixed-price contracts with strict cost caps. Scope changes require formal, expensive Change Requests.</p>
+                                </div>
+                                <div class="p-3 rounded-xl bg-emerald-950/20 border border-emerald-900/30">
+                                    <div class="font-semibold text-emerald-300 mb-1" data-i18n="agLabel">Agile:</div>
+                                    <p class="text-slate-300" data-i18n="costAgDesc">Time &amp; Materials / Capacity-based funding. Scope is flexible while sprint capacity remains fixed.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hybrid -->
+                    <div class="bento-card p-6 rounded-2xl border-t-2 border-t-amber-400 flex flex-col justify-between bg-gradient-to-b from-slate-900/90 to-slate-950/90">
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-mono px-2 py-1 rounded bg-amber-950/60 text-amber-300 border border-amber-800/40" data-i18n="dimHybrid">Hybrid Synthesis</span>
+                                <svg class="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                            </div>
+                            <h3 class="text-lg font-bold text-white" data-i18n="cardHybridTitle">The Hybrid Alternative</h3>
+                            <p class="text-xs text-slate-300 leading-relaxed" data-i18n="hybridDesc">
+                                As emphasized by Thesing et al., large enterprises often succeed best with a <strong>Bimodal / Hybrid model</strong>: High-level governance, architecture, and budgeting follow plan-driven milestones, while execution subprojects run in iterative Scrum sprints.
+                            </p>
+                        </div>
+                        <div class="pt-3 border-t border-slate-800/60">
+                            <button onclick="switchTab('decision')" class="w-full py-2 px-3 rounded-lg bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-200 border border-indigo-500/30 text-xs font-semibold transition-all text-center block" data-i18n="btnCheckFit">
+                                Evaluate Project Fit →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: FLOWS -->
+            <section id="tab-flows" class="tab-pane hidden space-y-8">
+                <div class="border-b border-slate-800 pb-4">
+                    <h2 class="text-2xl font-bold text-white tracking-tight" data-i18n="flowsHeading">Visual Workflow Architecture</h2>
+                    <p class="text-sm text-slate-400" data-i18n="flowsSubheading">Linear sequential progression versus cyclic iterative feedback loops.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Waterfall Flow -->
+                    <div class="bento-card p-6 rounded-2xl space-y-6">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+                                <h3 class="font-bold text-lg text-white" data-i18n="wfFlowTitle">Linear Waterfall Lifecycle (Sequential)</h3>
+                            </div>
+                            <span class="text-xs font-mono text-slate-400" data-i18n="wfStageGate">Stage-Gate Model</span>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-700/60 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <span class="w-7 h-7 rounded-lg bg-blue-600/30 text-blue-400 font-mono font-bold flex items-center justify-center text-xs">01</span>
+                                    <div>
+                                        <div class="text-sm font-semibold text-white" data-i18n="wfStep1Title">Requirements Engineering</div>
+                                        <div class="text-xs text-slate-400" data-i18n="wfStep1Desc">Comprehensive specification documents &amp; stakeholder sign-off</div>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-mono text-blue-400">Gate 1</span>
+                            </div>
+
+                            <div class="flex justify-center text-slate-600">
+                                <svg class="w-5 h-5 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-700/60 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <span class="w-7 h-7 rounded-lg bg-blue-600/30 text-blue-400 font-mono font-bold flex items-center justify-center text-xs">02</span>
+                                    <div>
+                                        <div class="text-sm font-semibold text-white" data-i18n="wfStep2Title">System Architecture &amp; Design</div>
+                                        <div class="text-xs text-slate-400" data-i18n="wfStep2Desc">Database schemas, hardware specs &amp; technical blueprint</div>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-mono text-blue-400">Gate 2</span>
+                            </div>
+
+                            <div class="flex justify-center text-slate-600">
+                                <svg class="w-5 h-5 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-700/60 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <span class="w-7 h-7 rounded-lg bg-blue-600/30 text-blue-400 font-mono font-bold flex items-center justify-center text-xs">03</span>
+                                    <div>
+                                        <div class="text-sm font-semibold text-white" data-i18n="wfStep3Title">Development &amp; Implementation</div>
+                                        <div class="text-xs text-slate-400" data-i18n="wfStep3Desc">Code construction according to strict architectural contracts</div>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-mono text-blue-400">Gate 3</span>
+                            </div>
+
+                            <div class="flex justify-center text-slate-600">
+                                <svg class="w-5 h-5 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-700/60 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <span class="w-7 h-7 rounded-lg bg-blue-600/30 text-blue-400 font-mono font-bold flex items-center justify-center text-xs">04</span>
+                                    <div>
+                                        <div class="text-sm font-semibold text-white" data-i18n="wfStep4Title">System Integration &amp; Verification</div>
+                                        <div class="text-xs text-slate-400" data-i18n="wfStep4Desc">End-to-end testing, quality assurance &amp; compliance validation</div>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-mono text-blue-400">Gate 4</span>
+                            </div>
+
+                            <div class="flex justify-center text-slate-600">
+                                <svg class="w-5 h-5 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-700/60 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <span class="w-7 h-7 rounded-lg bg-blue-600/30 text-blue-400 font-mono font-bold flex items-center justify-center text-xs">05</span>
+                                    <div>
+                                        <div class="text-sm font-semibold text-white" data-i18n="wfStep5Title">Deployment &amp; Maintenance</div>
+                                        <div class="text-xs text-slate-400" data-i18n="wfStep5Desc">Final handover to client and transition to operational run</div>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-mono text-emerald-400">Done</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Agile Sprint Cycle -->
+                    <div class="bento-card p-6 rounded-2xl space-y-6 flex flex-col justify-between">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                                <h3 class="font-bold text-lg text-white" data-i18n="agFlowTitle">Iterative Agile Cadence (Scrum / Sprints)</h3>
+                            </div>
+                            <span class="text-xs font-mono text-slate-400" data-i18n="agCadence">1-4 Week Cycles</span>
+                        </div>
+
+                        <div class="relative py-8 flex items-center justify-center">
+                            <div class="w-72 h-72 rounded-full border-2 border-dashed border-emerald-500/40 relative flex items-center justify-center animate-spin-slow">
+                                <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-md bg-emerald-950 border border-emerald-500 text-[10px] font-bold text-emerald-300">Sprint Plan</div>
+                                <div class="absolute top-1/2 -right-3 -translate-y-1/2 px-2.5 py-1 rounded-md bg-emerald-950 border border-emerald-500 text-[10px] font-bold text-emerald-300">Daily Standup</div>
+                                <div class="absolute -bottom-3 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-md bg-emerald-950 border border-emerald-500 text-[10px] font-bold text-emerald-300">Sprint Review</div>
+                                <div class="absolute top-1/2 -left-3 -translate-y-1/2 px-2.5 py-1 rounded-md bg-emerald-950 border border-emerald-500 text-[10px] font-bold text-emerald-300">Retrospective</div>
+                            </div>
+                            <div class="absolute text-center p-4 rounded-2xl bg-slate-900 border border-emerald-500/50 shadow-xl shadow-emerald-500/10 max-w-[160px]">
+                                <div class="w-8 h-8 mx-auto rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold mb-1">🎁</div>
+                                <div class="text-xs font-bold text-white" data-i18n="agShippable">Potentially Shippable Increment</div>
+                                <div class="text-[10px] text-emerald-400 mt-1" data-i18n="agFastFeedback">Rapid Customer Value</div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 pt-2">
+                            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                                <div class="text-xs font-bold text-emerald-400 mb-1" data-i18n="agPil1Title">Continuous Feedback</div>
+                                <p class="text-[11px] text-slate-300" data-i18n="agPil1Desc">Stakeholder feedback is gathered every sprint, immediately redirecting the backlog.</p>
+                            </div>
+                            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                                <div class="text-xs font-bold text-emerald-400 mb-1" data-i18n="agPil2Title">Early Risk Reduction</div>
+                                <p class="text-[11px] text-slate-300" data-i18n="agPil2Desc">Integration and testing occur daily rather than being delayed to project finale.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: PROS & CONS -->
+            <section id="tab-tradeoffs" class="tab-pane hidden space-y-8">
+                <div class="border-b border-slate-800 pb-4">
+                    <h2 class="text-2xl font-bold text-white tracking-tight" data-i18n="tradeoffsHeading">Empirical Advantages &amp; Disadvantages</h2>
+                    <p class="text-sm text-slate-400" data-i18n="tradeoffsSubheading">Ranked based on the primary survey data of 15 senior project managers (Thesing et al. Figures 3–6).</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Waterfall Pros & Cons -->
+                    <div class="bento-card p-6 rounded-2xl border-t-2 border-t-blue-500 space-y-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-lg">📦</div>
+                            <div>
+                                <h3 class="text-lg font-bold text-white">Waterfall Methodology</h3>
+                                <p class="text-xs text-slate-400" data-i18n="wfSub">Plan-Driven Stability</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <h4 class="text-xs font-mono uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span data-i18n="prosTitle">Key Advantages (Expert Consensus)</span>
+                            </h4>
+                            <ul class="space-y-2 text-xs text-slate-300">
+                                <li class="flex items-start gap-2"><span class="text-emerald-400">✓</span> <span data-i18n="wfPro1">Fixed roles and processes with crystal-clear responsibilities.</span></li>
+                                <li class="flex items-start gap-2"><span class="text-emerald-400">✓</span> <span data-i18n="wfPro2">Stable, systematic, and documented planning from the onset.</span></li>
+                                <li class="flex items-start gap-2"><span class="text-emerald-400">✓</span> <span data-i18n="wfPro3">High predictability of team member capacity &amp; resource allocation.</span></li>
+                                <li class="flex items-start gap-2"><span class="text-emerald-400">✓</span> <span data-i18n="wfPro4">Measurable progress via planned milestones and stage gates.</span></li>
+                                <li class="flex items-start gap-2"><span class="text-emerald-400">✓</span> <span data-i18n="wfPro5">Reliable estimation of time, budget caps, and legal contract compliance.</span></li>
+                            </ul>
+                        </div>
+
+                        <div class="space-y-3 pt-3 border-t border-slate-800">
+                            <h4 class="text-xs font-mono uppercase tracking-wider text-rose-400 flex items-center gap-1.5">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                <span data-i18n="consTitle">Key Constraints &amp; Risks</span>
+                            </h4>
+                            <ul class="space-y-2 text-xs text-slate-300">
+                                <li class="flex items-start gap-2"><span class="text-rose-400">✗</span> <span data-i18n="wfCon1">Incorrect planning caused by abstract initial specifications.</span></li>
+                                <li class="flex items-start gap-2"><span class="text-rose-400">✗</span> <span data-i18n="wfCon2">Client overburdened by requirement to formulate everything upfront.</span></li>
+                                <li class="flex items-start gap-2"><span class="text-rose-400">✗</span> <span data-i18n="wfCon3">Error corrections late in testing phase are highly cost-intensive.</span></li>
+                                <li class="flex items-start gap-2"><span class="text-rose-400">✗</span> <span data-i18n="wfCon4">Rigid sequence prevents ongoing feedback from real end-users.</span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Agile Pros & Cons -->
+                    <div class="bento-card p-6 rounded-2xl border-t-2 border-t-emerald-500 space-y-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-lg">🚀</div>
+                            <div>
+                                <h3 class="text-lg font-bold text-white">Agile Methodology</h3>
+                                <p class="text-xs text-slate-400" data-i18n="agSub">Value-Driven Adaptability</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <h4 class="text-xs font-mono uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span data-i18n="prosTitle">Key Advantages (Expert Consensus)</span>
+                            </h4>
+                            <ul class="space-y-2 text-xs text-slate-300">
+                                <li class="flex items-start gap-2"><span class="text-emerald-400">✓</span> <span data-i18n="agPro1">Fast recognition of changed requirements via ongoing customer feedback.</span></li>
+                                <li class="flex items-start gap-2"><span class="text-emerald-400">✓</span> <span data-i18n="agPro2">Rapid defect identification due to short development &amp; test cycles.</span></li>
+                                <li class="flex items-start gap-2"><span class="text-emerald-400">✓</span> <span data-i18n="agPro3">High flexibility to react dynamically to changing market priorities.</span></li>
+                                <li class="flex items-start gap-2"><span class="text-emerald-400">✓</span> <span data-i18n="agPro4">Significantly lower risk of developing the wrong end product.</span></li>
+                                <li class="flex items-start gap-2"><span class="text-emerald-400">✓</span> <span data-i18n="agPro5">High team motivation and accountability through self-organization.</span></li>
+                            </ul>
+                        </div>
+
+                        <div class="space-y-3 pt-3 border-t border-slate-800">
+                            <h4 class="text-xs font-mono uppercase tracking-wider text-rose-400 flex items-center gap-1.5">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                <span data-i18n="consTitle">Key Constraints &amp; Risks</span>
+                            </h4>
+                            <ul class="space-y-2 text-xs text-slate-300">
+                                <li class="flex items-start gap-2"><span class="text-rose-400">✗</span> <span data-i18n="agCon1">Iterative approach frequently clashes with rigid corporate culture.</span></li>
+                                <li class="flex items-start gap-2"><span class="text-rose-400">✗</span> <span data-i18n="agCon2">Project success is heavily reliant on team competence and self-discipline.</span></li>
+                                <li class="flex items-start gap-2"><span class="text-rose-400">✗</span> <span data-i18n="agCon3">Requires continuous high time commitment from client / Product Owner.</span></li>
+                                <li class="flex items-start gap-2"><span class="text-rose-400">✗</span> <span data-i18n="agCon4">Harder to estimate total cost and duration at project inception.</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: DECISION ENGINE -->
+            <section id="tab-decision" class="tab-pane hidden space-y-10">
+                <div class="border-b border-slate-800 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded bg-indigo-900/60 text-indigo-300 border border-indigo-700/50 text-xs font-mono mb-2" data-i18n="modelTag">Scientific Decision Engine</div>
+                        <h2 class="text-2xl font-bold text-white tracking-tight" data-i18n="assessHeading">2-Stage Project Methodology Selector</h2>
+                        <p class="text-sm text-slate-400" data-i18n="assessSubheading">Complete the Step 1 Knockout Filter, then score the 15 Empirical Criteria across the 5 project dimensions.</p>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button onclick="loadPreset('software')" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition-all" data-i18n="btnPresetSaaS">Preset: Web App</button>
+                        <button onclick="loadPreset('construction')" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition-all" data-i18n="btnPresetGov">Preset: Regulated/Infra</button>
+                        <button onclick="resetAssessment()" class="px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-600 text-xs font-semibold text-slate-400 transition-all" data-i18n="btnReset">Reset</button>
+                    </div>
+                </div>
+
+                <!-- STAGE 1: KO FILTER -->
+                <div class="bento-card p-6 rounded-2xl border-l-4 border-l-amber-500 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-mono uppercase text-amber-400 font-bold" data-i18n="koHeader">Step 1: Knockout (K.O.) Criteria Filter</span>
+                            <h3 class="text-lg font-bold text-white" data-i18n="koTitle">Exclusion Screening for Agile Applicability</h3>
+                        </div>
+                        <span id="ko-status-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-950 text-emerald-300 border border-emerald-700/60" data-i18n="koPass">No K.O. Triggered (Proceed)</span>
+                    </div>
+
+                    <p class="text-xs text-slate-400" data-i18n="koDesc">
+                        According to Thesing et al. (2021), if <em>any</em> of the following conditions apply, an overarching agile methodology is fundamentally non-viable for the project:
+                    </p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-2">
+                        <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-slate-700 cursor-pointer transition-all">
+                            <input type="checkbox" id="ko1" onchange="runEvaluation()" class="mt-1 rounded bg-slate-800 border-slate-600 text-indigo-600 focus:ring-0">
+                            <div class="text-xs">
+                                <div class="font-bold text-slate-200" data-i18n="ko1Title">Non-Decomposable Solution</div>
+                                <div class="text-slate-400 mt-0.5" data-i18n="ko1Desc">Solution cannot be delivered in increments; prototyping is technically impossible.</div>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-slate-700 cursor-pointer transition-all">
+                            <input type="checkbox" id="ko2" onchange="runEvaluation()" class="mt-1 rounded bg-slate-800 border-slate-600 text-indigo-600 focus:ring-0">
+                            <div class="text-xs">
+                                <div class="font-bold text-slate-200" data-i18n="ko2Title">"One-Shot Game" Project</div>
+                                <div class="text-slate-400 mt-0.5" data-i18n="ko2Desc">Iterative rework legally/technically forbidden or has prohibitive cost (e.g. building construction, plant relocation).</div>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-slate-700 cursor-pointer transition-all">
+                            <input type="checkbox" id="ko3" onchange="runEvaluation()" class="mt-1 rounded bg-slate-800 border-slate-600 text-indigo-600 focus:ring-0">
+                            <div class="text-xs">
+                                <div class="font-bold text-slate-200" data-i18n="ko3Title">Safety-Critical / Real-Time Risk</div>
+                                <div class="text-slate-400 mt-0.5" data-i18n="ko3Desc">Operational life-safety risks prohibit test-driven iteration; strict formal traceability required.</div>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-slate-700 cursor-pointer transition-all">
+                            <input type="checkbox" id="ko4" onchange="runEvaluation()" class="mt-1 rounded bg-slate-800 border-slate-600 text-indigo-600 focus:ring-0">
+                            <div class="text-xs">
+                                <div class="font-bold text-slate-200" data-i18n="ko4Title">Sponsor Rejection of Agile</div>
+                                <div class="text-slate-400 mt-0.5" data-i18n="ko4Desc">Executive management and project sponsor actively reject agile philosophy and delegation.</div>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-slate-700 cursor-pointer transition-all">
+                            <input type="checkbox" id="ko5" onchange="runEvaluation()" class="mt-1 rounded bg-slate-800 border-slate-600 text-indigo-600 focus:ring-0">
+                            <div class="text-xs">
+                                <div class="font-bold text-slate-200" data-i18n="ko5Title">Inability to Absorb Increments</div>
+                                <div class="text-slate-400 mt-0.5" data-i18n="ko5Desc">Client organization lacks operational capacity or culture to receive and review frequent partial releases.</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- STAGE 2: 15 CRITERIA -->
+                <div id="criteria-section" class="space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <div>
+                            <span class="text-xs font-mono uppercase text-indigo-400 font-bold" data-i18n="step2Header">Step 2: Empirical Scoring Matrix</span>
+                            <h3 class="text-lg font-bold text-white" data-i18n="step2Title">Evaluate 15 Criteria Across 5 Dimensions</h3>
+                            <p class="text-xs text-slate-400" data-i18n="scoringGuide">Score: 0 = Pure Agile Fit | 2 = Balanced / Hybrid Fit | 4 = Pure Waterfall Fit</p>
+                        </div>
+                    </div>
+
+                    <!-- D1 -->
+                    <div class="bento-card p-5 rounded-2xl space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                            <div class="flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-md bg-blue-500/20 text-blue-400 font-bold flex items-center justify-center text-xs">D1</span>
+                                <h4 class="font-bold text-sm text-white" data-i18n="critCat1">Scope, Quality &amp; Risks (~36% Weight)</h4>
+                            </div>
+                            <span id="score-d1" class="text-xs font-mono text-indigo-400 font-bold">Avg: 2.0 / 4</span>
+                        </div>
+
+                        <div class="space-y-4 text-xs">
+                            <div class="space-y-1.5">
+                                <div class="flex justify-between font-semibold text-slate-200">
+                                    <span data-i18n="c1_title">1.1 Stability &amp; Low Dynamics of Customer Requirements</span>
+                                    <span id="val-c1" class="font-mono text-indigo-300">2 - Moderate</span>
+                                </div>
+                                <input type="range" id="c1" min="0" max="4" value="2" oninput="updateCriteriaValue('c1')" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+                                <div class="flex justify-between text-[10px] text-slate-500">
+                                    <span data-i18n="agileSide">0 (Highly dynamic / changing)</span>
+                                    <span data-i18n="waterfallSide">4 (Completely stable &amp; known upfront)</span>
+                                </div>
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <div class="flex justify-between font-semibold text-slate-200">
+                                    <span data-i18n="c2_title">1.2 Visibility &amp; Formal Documentation of Requirements</span>
+                                    <span id="val-c2" class="font-mono text-indigo-300">2 - Moderate</span>
+                                </div>
+                                <input type="range" id="c2" min="0" max="4" value="2" oninput="updateCriteriaValue('c2')" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+                                <div class="flex justify-between text-[10px] text-slate-500">
+                                    <span data-i18n="c2_left">0 (Requirements discovered via prototype)</span>
+                                    <span data-i18n="c2_right">4 (Formal signed specs mandatory)</span>
+                                </div>
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <div class="flex justify-between font-semibold text-slate-200">
+                                    <span data-i18n="c3_title">1.3 Deliverable Interdependency &amp; Complexity</span>
+                                    <span id="val-c3" class="font-mono text-indigo-300">2 - Moderate</span>
+                                </div>
+                                <input type="range" id="c3" min="0" max="4" value="2" oninput="updateCriteriaValue('c3')" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+                                <div class="flex justify-between text-[10px] text-slate-500">
+                                    <span data-i18n="c3_left">0 (Modular, independent increments)</span>
+                                    <span data-i18n="c3_right">4 (Strict sequential phase dependency)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- D2 -->
+                    <div class="bento-card p-5 rounded-2xl space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                            <div class="flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-md bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center text-xs">D2</span>
+                                <h4 class="font-bold text-sm text-white" data-i18n="critCat2">Organizational Context &amp; Culture (~27% Weight)</h4>
+                            </div>
+                            <span id="score-d2" class="text-xs font-mono text-indigo-400 font-bold">Avg: 2.0 / 4</span>
+                        </div>
+
+                        <div class="space-y-4 text-xs">
+                            <div class="space-y-1.5">
+                                <div class="flex justify-between font-semibold text-slate-200">
+                                    <span data-i18n="c4_title">2.1 Hierarchical Control vs. Team Empowerment</span>
+                                    <span id="val-c4" class="font-mono text-indigo-300">2 - Moderate</span>
+                                </div>
+                                <input type="range" id="c4" min="0" max="4" value="2" oninput="updateCriteriaValue('c4')" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+                                <div class="flex justify-between text-[10px] text-slate-500">
+                                    <span data-i18n="c4_left">0 (Autonomous, decentralized PO)</span>
+                                    <span data-i18n="c4_right">4 (Strict hierarchical central control)</span>
+                                </div>
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <div class="flex justify-between font-semibold text-slate-200">
+                                    <span data-i18n="c5_title">2.2 Stakeholder / Customer Involvement Frequency</span>
+                                    <span id="val-c5" class="font-mono text-indigo-300">2 - Moderate</span>
+                                </div>
+                                <input type="range" id="c5" min="0" max="4" value="2" oninput="updateCriteriaValue('c5')" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+                                <div class="flex justify-between text-[10px] text-slate-500">
+                                    <span data-i18n="c5_left">0 (Continuous weekly collaboration)</span>
+                                    <span data-i18n="c5_right">4 (Sign-off at start &amp; end only)</span>
+                                </div>
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <div class="flex justify-between font-semibold text-slate-200">
+                                    <span data-i18n="c6_title">2.3 Cultural Value on Formal Gates vs. Rapid Feedback</span>
+                                    <span id="val-c6" class="font-mono text-indigo-300">2 - Moderate</span>
+                                </div>
+                                <input type="range" id="c6" min="0" max="4" value="2" oninput="updateCriteriaValue('c6')" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+                                <div class="flex justify-between text-[10px] text-slate-500">
+                                    <span data-i18n="c6_left">0 (Experimentation &amp; psychological safety)</span>
+                                    <span data-i18n="c6_right">4 (Strict adherence to gates &amp; policies)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- D3 -->
+                    <div class="bento-card p-5 rounded-2xl space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                            <div class="flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-md bg-indigo-500/20 text-indigo-400 font-bold flex items-center justify-center text-xs">D3</span>
+                                <h4 class="font-bold text-sm text-white" data-i18n="critCat3">Project Team Characteristics (~21% Weight)</h4>
+                            </div>
+                            <span id="score-d3" class="text-xs font-mono text-indigo-400 font-bold">Avg: 2.0 / 4</span>
+                        </div>
+
+                        <div class="space-y-4 text-xs">
+                            <div class="space-y-1.5">
+                                <div class="flex justify-between font-semibold text-slate-200">
+                                    <span data-i18n="c7_title">3.1 Self-Organization &amp; Adaptability Willingness</span>
+                                    <span id="val-c7" class="font-mono text-indigo-300">2 - Moderate</span>
+                                </div>
+                                <input type="range" id="c7" min="0" max="4" value="2" oninput="updateCriteriaValue('c7')" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+                                <div class="flex justify-between text-[10px] text-slate-500">
+                                    <span data-i18n="c7_left">0 (Highly proactive, self-directed)</span>
+                                    <span data-i18n="c7_right">4 (Prefers clear instructions &amp; specs)</span>
+                                </div>
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <div class="flex justify-between font-semibold text-slate-200">
+                                    <span data-i18n="c8_title">3.2 Agile Methodology Maturity &amp; Domain Expertise</span>
+                                    <span id="val-c8" class="font-mono text-indigo-300">2 - Moderate</span>
+                                </div>
+                                <input type="range" id="c8" min="0" max="4" value="2" oninput="updateCriteriaValue('c8')" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+                                <div class="flex justify-between text-[10px] text-slate-500">
+                                    <span data-i18n="c8_left">0 (Deep agile mastery &amp; seniority)</span>
+                                    <span data-i18n="c8_right">4 (Novice in agile / traditional trained)</span>
+                                </div>
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <div class="flex justify-between font-semibold text-slate-200">
+                                    <span data-i18n="c9_title">3.3 Team Size &amp; Geographic Dispersion</span>
+                                    <span id="val-c9" class="font-mono text-indigo-300">2 - Moderate</span>
+                                </div>
+                                <input type="range" id="c9" min="0" max="4" value="2" oninput="updateCriteriaValue('c9')" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+                                <div class="flex justify-between text-[10px] text-slate-500">
+                                    <span data-i18n="c9_left">0 (Co-located / small team ≤ 10)</span>
+                                    <span data-i18n="c9_right">4 (Large >10 / multi-vendor global)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- D4 & D5 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="bento-card p-5 rounded-2xl space-y-4">
+                            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-6 h-6 rounded-md bg-amber-500/20 text-amber-400 font-bold flex items-center justify-center text-xs">D4</span>
+                                    <h4 class="font-bold text-sm text-white" data-i18n="critCat4">Time Requirements (~8%)</h4>
+                                </div>
+                                <span id="score-d4" class="text-xs font-mono text-indigo-400 font-bold">Avg: 2.0 / 4</span>
+                            </div>
+
+                            <div class="space-y-4 text-xs">
+                                <div class="space-y-1.5">
+                                    <div class="flex justify-between font-semibold text-slate-200">
+                                        <span data-i18n="c10_title">4.1 Strict Planned End-Date Compliance</span>
+                                        <span id="val-c10" class="font-mono text-indigo-300">2</span>
+                                    </div>
+                                    <input type="range" id="c10" min="0" max="4" value="2" oninput="updateCriteriaValue('c10')" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+                                </div>
+                                <div class="space-y-1.5">
+                                    <div class="flex justify-between font-semibold text-slate-200">
+                                        <span data-i18n="c11_title">4.2 Upfront Duration Prediction Reliability</span>
+                                        <span id="val-c11" class="font-mono text-indigo-300">2</span>
+                                    </div>
+                                    <input type="range" id="c11" min="0" max="4" value="2" oninput="updateCriteriaValue('c11')" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+                                </div>
+                                <div class="space-y-1.5">
+                                    <div class="flex justify-between font-semibold text-slate-200">
+                                        <span data-i18n="c12_title">4.3 Long Project Cycle / Monolithic Release</span>
+                                        <span id="val-c12" class="font-mono text-indigo-300">2</span>
+                                    </div>
+                                    <input type="range" id="c12" min="0" max="4" value="2" oninput="updateCriteriaValue('c12')" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bento-card p-5 rounded-2xl space-y-4">
+                            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-6 h-6 rounded-md bg-purple-500/20 text-purple-400 font-bold flex items-center justify-center text-xs">D5</span>
+                                    <h4 class="font-bold text-sm text-white" data-i18n="critCat5">Cost &amp; Budget (~8%)</h4>
+                                </div>
+                                <span id="score-d5" class="text-xs font-mono text-indigo-400 font-bold">Avg: 2.0 / 4</span>
+                            </div>
+
+                            <div class="space-y-4 text-xs">
+                                <div class="space-y-1.5">
+                                    <div class="flex justify-between font-semibold text-slate-200">
+                                        <span data-i18n="c13_title">5.1 Fixed Cost Cap Demanded by Client</span>
+                                        <span id="val-c13" class="font-mono text-indigo-300">2</span>
+                                    </div>
+                                    <input type="range" id="c13" min="0" max="4" value="2" oninput="updateCriteriaValue('c13')" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+                                </div>
+                                <div class="space-y-1.5">
+                                    <div class="flex justify-between font-semibold text-slate-200">
+                                        <span data-i18n="c14_title">5.2 Fixed-Price Vendor Outsourcing Planned</span>
+                                        <span id="val-c14" class="font-mono text-indigo-300">2</span>
+                                    </div>
+                                    <input type="range" id="c14" min="0" max="4" value="2" oninput="updateCriteriaValue('c14')" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+                                </div>
+                                <div class="space-y-1.5">
+                                    <div class="flex justify-between font-semibold text-slate-200">
+                                        <span data-i18n="c15_title">5.3 Predictability of Upfront Effort/Cost</span>
+                                        <span id="val-c15" class="font-mono text-indigo-300">2</span>
+                                    </div>
+                                    <input type="range" id="c15" min="0" max="4" value="2" oninput="updateCriteriaValue('c15')" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RESULTS DASHBOARD -->
+                <div id="results-dashboard" class="bento-card p-6 sm:p-8 rounded-3xl border-2 border-indigo-500/40 bg-slate-900/90 shadow-2xl space-y-8">
+                    
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                        <div>
+                            <span class="text-xs font-mono uppercase text-indigo-400 tracking-wider font-bold" data-i18n="resTag">Analytical Recommendation</span>
+                            <h3 class="text-2xl font-extrabold text-white mt-1" data-i18n="resTitle">Project Methodology Synthesis</h3>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="window.print()" class="px-3.5 py-1.5 rounded-xl border border-slate-700 hover:bg-slate-800 text-xs font-semibold text-slate-300 flex items-center gap-1.5 transition-all">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                                <span data-i18n="btnPrint">Print / Export PDF</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Top Result Banner -->
+                    <div id="result-banner" class="p-6 rounded-2xl bg-gradient-to-r from-indigo-950/80 via-slate-900 to-slate-950 border border-indigo-500/30 flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div class="space-y-2 text-center md:text-left">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider" id="verdict-pill">
+                                Balanced Hybrid Fit
+                            </div>
+                            <h4 id="verdict-heading" class="text-2xl sm:text-3xl font-black text-white">Hybrid Approach Recommended</h4>
+                            <p id="verdict-summary" class="text-sm text-slate-300 max-w-xl">
+                                Your project exhibits mixed characteristics: broad scope predictability favors classical oversight, while module-level uncertainty benefits from agile Scrum sprints.
+                            </p>
+                        </div>
+                        <div class="flex flex-col items-center justify-center p-4 rounded-2xl bg-slate-950/80 border border-slate-800 min-w-[150px]">
+                            <div class="text-[11px] font-mono text-slate-400 uppercase" data-i18n="scoreLabel">Waterfall Index</div>
+                            <div id="verdict-score" class="text-3xl sm:text-4xl font-black text-indigo-400">50%</div>
+                            <div id="verdict-subtext" class="text-[10px] text-slate-400 mt-1">Agile Index: 50%</div>
+                        </div>
+                    </div>
+
+                    <!-- Radar Chart & Strategy Guidance -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                        <div class="bento-card p-5 rounded-2xl space-y-3">
+                            <h5 class="text-xs font-mono uppercase text-slate-400 font-bold text-center" data-i18n="radarTitle">5-Dimension Alignment Radar</h5>
+                            <div class="relative h-64 sm:h-72 w-full flex items-center justify-center">
+                                <canvas id="radarChart"></canvas>
+                            </div>
+                            <p class="text-[10px] text-slate-500 text-center" data-i18n="radarSub">Outer rim (4.0) = Pure Waterfall | Center (0.0) = Pure Agile</p>
+                        </div>
+
+                        <div class="space-y-4">
+                            <h5 class="text-xs font-mono uppercase text-indigo-400 font-bold" data-i18n="actionPlanTitle">Strategic Implementation Roadmap</h5>
+                            
+                            <div id="strategy-points" class="space-y-3 text-xs">
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-slate-400 leading-relaxed">
+                                <strong class="text-slate-200" data-i18n="noteTitle">Scientific Rigor Note:</strong>
+                                <span data-i18n="noteDesc"> Per Thesing et al., no methodology is a silver bullet. If project criteria change mid-flight (e.g. key stakeholder turnover or sudden regulatory constraints), re-evaluate this matrix.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="border-t border-slate-800/80 bg-slate-950/90 py-8 text-center text-xs text-slate-500">
+            <div class="max-w-7xl mx-auto px-4 space-y-2">
+                <p data-i18n="footerRef">Reference: Theo Thesing, Carsten Feldmann, Martin Burchardt (2021). <em>Agile versus Waterfall Project Management: Decision Model for Selecting the Appropriate Approach to a Project</em>. Procedia Computer Science 181, 746–756.</p>
+                <p data-i18n="footerSub">Interactive Design Engineering &amp; Decision System · Dual Language (EN / ID)</p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        const i18n = {
+            en: {
+                navSubtitle: "Empirical Agile vs. Waterfall Decision Framework",
+                tabComparison: "Comparison",
+                tabFlows: "Process Flows",
+                tabTradeoffs: "Pros & Cons",
+                tabAssessment: "2-Step Assessment",
+                btnRunAssessment: "Start Assessment",
+                heroPill: "Peer-Reviewed Research Framework | Procedia Computer Science",
+                heroTitle: "Agile vs. Waterfall <span class="bg-gradient-to-r from-blue-400 via-indigo-300 to-emerald-400 bg-clip-text text-transparent">Decision Engine</span>",
+                heroSubtitle: "Scientific multi-criteria decision tool grounded in empirical practitioner data from Theo Thesing et al. (2021) to select your optimal project methodology.",
+                statCriteria: "15 Weighted Criteria",
+                statCriteriaVal: "5 Core Dimensions",
+                statKo: "Stage 1 Filter",
+                statKoVal: "5 K.O. Knockouts",
+                statResearch: "Empirical Study",
+                statResearchVal: "15 Industry Experts",
+                statOutput: "Result Spectrum",
+                statOutputVal: "Waterfall / Agile / Hybrid",
+                compHeading: "Comparative Architecture",
+                compSubheading: "Key operational differentiators evaluated across the 5 core project management dimensions.",
+                dimScope: "Dimension 1: Scope (~36% Weight)",
+                cardScopeTitle: "Requirements & Scope Dynamics",
+                wfLabel: "Waterfall:",
+                agLabel: "Agile:",
+                scopeWfDesc: "Fixed upfront scope; detailed specifications signed off early. Low tolerance for requirement volatility.",
+                scopeAgDesc: "Emergent and evolving backlog. High dynamics embraced via short feedback cycles and incremental refinement.",
+                dimOrg: "Dimension 2: Organization (~27% Weight)",
+                cardOrgTitle: "Culture & Governance",
+                orgWfDesc: "Hierarchical command & control. Stage-gate approvals, milestone tracking, and heavy formal documentation.",
+                orgAgDesc: "Decentralized, empowered product ownership. Focus on business value, working software, and psychological safety.",
+                dimTeam: "Dimension 3: Team (~21% Weight)",
+                cardTeamTitle: "Team Structure & Autonomy",
+                teamWfDesc: "Functional silos (architects, devs, testers). Large distributed teams with formalized document handoffs.",
+                teamAgDesc: "Small cross-functional teams (≤10 members). Self-organizing, high direct communication, full-time commitment.",
+                dimTime: "Dimension 4: Time (~8% Weight)",
+                cardTimeTitle: "Timeline & Go-Live Target",
+                timeWfDesc: "Single final deployment at the end of the project cycle. Strict schedule baseline adherence.",
+                timeAgDesc: "Frequent sprint cadences (1-4 weeks). Continuous value release; flexible MVP time-to-market.",
+                dimCost: "Dimension 5: Cost (~8% Weight)",
+                cardCostTitle: "Budget & Contracting Model",
+                costWfDesc: "Fixed-price contracts with strict cost caps. Scope changes require formal, expensive Change Requests.",
+                costAgDesc: "Time & Materials / Capacity-based funding. Scope is flexible while sprint capacity remains fixed.",
+                dimHybrid: "Hybrid Synthesis",
+                cardHybridTitle: "The Hybrid Alternative",
+                hybridDesc: "As emphasized by Thesing et al., large enterprises often succeed best with a <strong>Bimodal / Hybrid model</strong>: High-level governance, architecture, and budgeting follow plan-driven milestones, while execution subprojects run in iterative Scrum sprints.",
+                btnCheckFit: "Evaluate Project Fit →",
+                flowsHeading: "Visual Workflow Architecture",
+                flowsSubheading: "Linear sequential progression versus cyclic iterative feedback loops.",
+                wfFlowTitle: "Linear Waterfall Lifecycle (Sequential)",
+                wfStageGate: "Stage-Gate Model",
+                wfStep1Title: "Requirements Engineering",
+                wfStep1Desc: "Comprehensive specification documents & stakeholder sign-off",
+                wfStep2Title: "System Architecture & Design",
+                wfStep2Desc: "Database schemas, hardware specs & technical blueprint",
+                wfStep3Title: "Development & Implementation",
+                wfStep3Desc: "Code construction according to strict architectural contracts",
+                wfStep4Title: "System Integration & Verification",
+                wfStep4Desc: "End-to-end testing, quality assurance & compliance validation",
+                wfStep5Title: "Deployment & Maintenance",
+                wfStep5Desc: "Final handover to client and transition to operational run",
+                agFlowTitle: "Iterative Agile Cadence (Scrum / Sprints)",
+                agCadence: "1-4 Week Cycles",
+                agShippable: "Potentially Shippable Increment",
+                agFastFeedback: "Rapid Customer Value",
+                agPil1Title: "Continuous Feedback",
+                agPil1Desc: "Stakeholder feedback is gathered every sprint, immediately redirecting the backlog.",
+                agPil2Title: "Early Risk Reduction",
+                agPil2Desc: "Integration and testing occur daily rather than being delayed to project finale.",
+                tradeoffsHeading: "Empirical Advantages & Disadvantages",
+                tradeoffsSubheading: "Ranked based on the primary survey data of 15 senior project managers (Thesing et al. Figures 3–6).",
+                wfSub: "Plan-Driven Stability",
+                agSub: "Value-Driven Adaptability",
+                prosTitle: "Key Advantages (Expert Consensus)",
+                consTitle: "Key Constraints & Risks",
+                wfPro1: "Fixed roles and processes with crystal-clear responsibilities.",
+                wfPro2: "Stable, systematic, and documented planning from the onset.",
+                wfPro3: "High predictability of team member capacity & resource allocation.",
+                wfPro4: "Measurable progress via planned milestones and stage gates.",
+                wfPro5: "Reliable estimation of time, budget caps, and legal contract compliance.",
+                wfCon1: "Incorrect planning caused by abstract initial specifications.",
+                wfCon2: "Client overburdened by requirement to formulate everything upfront.",
+                wfCon3: "Error corrections late in testing phase are highly cost-intensive.",
+                wfCon4: "Rigid sequence prevents ongoing feedback from real end-users.",
+                agPro1: "Fast recognition of changed requirements via ongoing customer feedback.",
+                agPro2: "Rapid defect identification due to short development & test cycles.",
+                agPro3: "High flexibility to react dynamically to changing market priorities.",
+                agPro4: "Significantly lower risk of developing the wrong end product.",
+                agPro5: "High team motivation and accountability through self-organization.",
+                agCon1: "Iterative approach frequently clashes with rigid corporate culture.",
+                agCon2: "Project success is heavily reliant on team competence and self-discipline.",
+                agCon3: "Requires continuous high time commitment from client / Product Owner.",
+                agCon4: "Harder to estimate total cost and duration at project inception.",
+                modelTag: "Scientific Decision Engine",
+                assessHeading: "2-Stage Project Methodology Selector",
+                assessSubheading: "Complete the Step 1 Knockout Filter, then score the 15 Empirical Criteria across the 5 project dimensions.",
+                btnPresetSaaS: "Preset: Web App",
+                btnPresetGov: "Preset: Regulated/Infra",
+                btnReset: "Reset",
+                koHeader: "Step 1: Knockout (K.O.) Criteria Filter",
+                koTitle: "Exclusion Screening for Agile Applicability",
+                koPass: "No K.O. Triggered (Proceed)",
+                koFail: "K.O. Triggered → Pure Waterfall Required",
+                koDesc: "According to Thesing et al. (2021), if any of the following conditions apply, an overarching agile methodology is fundamentally non-viable for the project:",
+                ko1Title: "Non-Decomposable Solution",
+                ko1Desc: "Solution cannot be delivered in increments; prototyping is technically impossible.",
+                ko2Title: ""One-Shot Game" Project",
+                ko2Desc: "Iterative rework legally/technically forbidden or has prohibitive cost (e.g. building construction, plant relocation).",
+                ko3Title: "Safety-Critical / Real-Time Risk",
+                ko3Desc: "Operational life-safety risks prohibit test-driven iteration; strict formal traceability required.",
+                ko4Title: "Sponsor Rejection of Agile",
+                ko4Desc: "Executive management and project sponsor actively reject agile philosophy and delegation.",
+                ko5Title: "Inability to Absorb Increments",
+                ko5Desc: "Client organization lacks operational capacity or culture to receive and review frequent partial releases.",
+                step2Header: "Step 2: Empirical Scoring Matrix",
+                step2Title: "Evaluate 15 Criteria Across 5 Dimensions",
+                scoringGuide: "Score: 0 = Pure Agile Fit | 2 = Balanced / Hybrid Fit | 4 = Pure Waterfall Fit",
+                critCat1: "Scope, Quality & Risks (~36% Weight)",
+                critCat2: "Organizational Context & Culture (~27% Weight)",
+                critCat3: "Project Team Characteristics (~21% Weight)",
+                critCat4: "Time Requirements (~8%)",
+                critCat5: "Cost & Budget (~8%)",
+                c1_title: "1.1 Stability & Low Dynamics of Customer Requirements",
+                c2_title: "1.2 Visibility & Formal Documentation of Requirements",
+                c3_title: "1.3 Deliverable Interdependency & Complexity",
+                c4_title: "2.1 Hierarchical Control vs. Team Empowerment",
+                c5_title: "2.2 Stakeholder / Customer Involvement Frequency",
+                c6_title: "2.3 Cultural Value on Formal Gates vs. Rapid Feedback",
+                c7_title: "3.1 Self-Organization & Adaptability Willingness",
+                c8_title: "3.2 Agile Methodology Maturity & Domain Expertise",
+                c9_title: "3.3 Team Size & Geographic Dispersion",
+                c10_title: "4.1 Strict Planned End-Date Compliance",
+                c11_title: "4.2 Upfront Duration Prediction Reliability",
+                c12_title: "4.3 Long Project Cycle / Monolithic Release",
+                c13_title: "5.1 Fixed Cost Cap Demanded by Client",
+                c14_title: "5.2 Fixed-Price Vendor Outsourcing Planned",
+                c15_title: "5.3 Predictability of Upfront Effort/Cost",
+                agileSide: "0 (Highly dynamic / changing)",
+                waterfallSide: "4 (Completely stable & known upfront)",
+                c2_left: "0 (Requirements discovered via prototype)",
+                c2_right: "4 (Formal signed specs mandatory)",
+                c3_left: "0 (Modular, independent increments)",
+                c3_right: "4 (Strict sequential phase dependency)",
+                c4_left: "0 (Autonomous, decentralized PO)",
+                c4_right: "4 (Strict hierarchical central control)",
+                c5_left: "0 (Continuous weekly collaboration)",
+                c5_right: "4 (Sign-off at start & end only)",
+                c6_left: "0 (Experimentation & psychological safety)",
+                c6_right: "4 (Strict adherence to gates & policies)",
+                c7_left: "0 (Highly proactive, self-directed)",
+                c7_right: "4 (Prefers clear instructions & specs)",
+                c8_left: "0 (Deep agile mastery & seniority)",
+                c8_right: "4 (Novice in agile / traditional trained)",
+                c9_left: "0 (Co-located / small team ≤ 10)",
+                c9_right: "4 (Large >10 / multi-vendor global)",
+                resTag: "Analytical Recommendation",
+                resTitle: "Project Methodology Synthesis",
+                btnPrint: "Print / Export PDF",
+                scoreLabel: "Waterfall Index",
+                radarTitle: "5-Dimension Alignment Radar",
+                radarSub: "Outer rim (4.0) = Pure Waterfall | Center (0.0) = Pure Agile",
+                actionPlanTitle: "Strategic Implementation Roadmap",
+                noteTitle: "Scientific Rigor Note:",
+                noteDesc: " Per Thesing et al., no methodology is a silver bullet. If project criteria change mid-flight (e.g. key stakeholder turnover or sudden regulatory constraints), re-evaluate this matrix.",
+                footerRef: "Reference: Theo Thesing, Carsten Feldmann, Martin Burchardt (2021). Agile versus Waterfall Project Management: Decision Model for Selecting the Appropriate Approach to a Project. Procedia Computer Science 181, 746–756.",
+                footerSub: "Interactive Design Engineering & Decision System · Dual Language (EN / ID)"
+            },
+            id: {
+                navSubtitle: "Kerangka Kerja Keputusan Empiris Agile vs. Waterfall",
+                tabComparison: "Perbandingan",
+                tabFlows: "Alur Proses",
+                tabTradeoffs: "Kelebihan & Kekurangan",
+                tabAssessment: "Asesmen 2-Tahap",
+                btnRunAssessment: "Mulai Asesmen",
+                heroPill: "Riset Ilmiah Peer-Reviewed | Procedia Computer Science",
+                heroTitle: "Mesin Keputusan <span class="bg-gradient-to-r from-blue-400 via-indigo-300 to-emerald-400 bg-clip-text text-transparent">Agile vs. Waterfall</span>",
+                heroSubtitle: "Alat pengambil keputusan multi-kriteria berbasis data empiris pakar industri oleh Theo Thesing et al. (2021) untuk menentukan metodologi proyek paling optimal.",
+                statCriteria: "15 Kriteria Berbobot",
+                statCriteriaVal: "5 Dimensi Utama",
+                statKo: "Filter Tahap 1",
+                statKoVal: "5 Faktor K.O.",
+                statResearch: "Riset Empiris",
+                statResearchVal: "15 Pakar Industri",
+                statOutput: "Spektrum Hasil",
+                statOutputVal: "Waterfall / Agile / Hibrida",
+                compHeading: "Arsitektur Komparatif",
+                compSubheading: "Perbedaan operasional utama yang dievaluasi di 5 dimensi inti manajemen proyek.",
+                dimScope: "Dimensi 1: Ruang Lingkup (~Bobot 36%)",
+                cardScopeTitle: "Dinamika Kebutuhan & Ruang Lingkup",
+                wfLabel: "Waterfall:",
+                agLabel: "Agile:",
+                scopeWfDesc: "Ruang lingkup dikunci di awal; spesifikasi detail disetujui resmi. Toleransi rendah terhadap perubahan.",
+                scopeAgDesc: "Backlog berkembang secara adaptif. Perubahan disambut lewat siklus umpan balik cepat dan iterasi berkala.",
+                dimOrg: "Dimensi 2: Organisasi (~Bobot 27%)",
+                cardOrgTitle: "Budaya & Tata Kelola Organisasi",
+                orgWfDesc: "Hierarkis komando & kontrol. Persetujuan stage-gate, kepatuhan milestone, dan dokumentasi formal yang ketat.",
+                orgAgDesc: "Desentralisasi wewenang ke Product Owner. Fokus pada nilai bisnis, produk berfungsi, dan keterbukaan psikologis.",
+                dimTeam: "Dimensi 3: Tim Proyek (~Bobot 21%)",
+                cardTeamTitle: "Struktur Tim & Otonomi",
+                teamWfDesc: "Silo fungsional (analis, dev, tester terpisah). Tim besar terdistribusi dengan serah terima dokumen formal.",
+                teamAgDesc: "Tim lintas fungsi mandiri (≤10 orang). Komunikasi langsung intensif dan komitmen kerja penuh waktu.",
+                dimTime: "Dimensi 4: Waktu (~Bobot 8%)",
+                cardTimeTitle: "Jadwal & Target Go-Live",
+                timeWfDesc: "Satu kali peluncuran di akhir siklus proyek. Kepatuhan mutlak terhadap jadwal awal.",
+                timeAgDesc: "Siklus sprint berkala (1-4 minggu). Peluncuran nilai berkala; jadwal fleksibel mengikuti MVP.",
+                dimCost: "Dimensi 5: Biaya (~Bobot 8%)",
+                cardCostTitle: "Anggaran & Model Kontrak",
+                costWfDesc: "Kontrak harga tetap (fixed-price). Perubahan ruang lingkup memerlukan Change Request resmi yang mahal.",
+                costAgDesc: "Pendanaan berbasis kapasitas/Time & Materials. Ruang lingkup fleksibel dengan kapasitas tim yang stabil.",
+                dimHybrid: "Sintesis Hibrida",
+                cardHybridTitle: "Alternatif Model Hibrida",
+                hybridDesc: "Sebagaimana ditegaskan Thesing et al., enterprise sering kali paling sukses dengan <strong>Model Hibrida / Bimodal</strong>: Tata kelola makro dan anggaran mengikuti Waterfall, sementara eksekusi teknis dijalankan dengan sprint Scrum.",
+                btnCheckFit: "Evaluasi Kecocokan Proyek →",
+                flowsHeading: "Visualisasi Alur Kerja",
+                flowsSubheading: "Perbandingan tahapan sekuensial linier vs. siklus iterasi umpan balik berkala.",
+                wfFlowTitle: "Siklus Linier Waterfall (Sekuensial)",
+                wfStageGate: "Model Gerbang Bertahap (Stage-Gate)",
+                wfStep1Title: "Analisis Kebutuhan",
+                wfStep1Desc: "Dokumentasi spesifikasi lengkap & persetujuan para pemangku kepentingan",
+                wfStep2Title: "Desain Arsitektur & Sistem",
+                wfStep2Desc: "Skema basis data, spesifikasi teknis, dan cetak biru arsitektur",
+                wfStep3Title: "Pengembangan & Konstruksi",
+                wfStep3Desc: "Penulisan kode sesuai kontrak spesifikasi yang telah disepakati",
+                wfStep4Title: "Integrasi & Pengujian Sistem",
+                wfStep4Desc: "Pengujian menyeluruh (E2E), jaminan kualitas, dan uji kepatuhan",
+                wfStep5Title: "Penerapan & Pemeliharaan",
+                wfStep5Desc: "Serah terima final ke klien dan transisi ke operasional rutin",
+                agFlowTitle: "Siklus Iteratif Agile (Scrum / Sprint)",
+                agCadence: "Siklus 1-4 Minggu",
+                agShippable: "Inkrement Produk Siap Rilis",
+                agFastFeedback: "Nilai Cepat bagi Pengguna",
+                agPil1Title: "Umpan Balik Berkelanjutan",
+                agPil1Desc: "Masukan dari klien didapat setiap akhir sprint untuk menyempurnakan backlog.",
+                agPil2Title: "Mitigasi Risiko Dini",
+                agPil2Desc: "Integrasi dan pengujian dilakukan setiap hari, bukan ditunda hingga akhir proyek.",
+                tradeoffsHeading: "Kelebihan & Kekurangan Berdasarkan Riset Empiris",
+                tradeoffsSubheading: "Diurutkan berdasarkan data survei primer 15 praktisi manajer proyek senior (Thesing et al. Gambar 3–6).",
+                wfSub: "Stabilitas Berbasis Rencana",
+                agSub: "Adaptabilitas Berbasis Nilai",
+                prosTitle: "Kelebihan Utama (Konsensus Pakar)",
+                consTitle: "Kekurangan & Risiko Utama",
+                wfPro1: "Peran dan proses terdefinisi pasti dengan tanggung jawab yang sangat jelas.",
+                wfPro2: "Perencanaan sistematis, stabil, dan terdokumentasi rapi sejak awal.",
+                wfPro3: "Kapasitas tim dan alokasi sumber daya sangat mudah diprediksi.",
+                wfPro4: "Kemajuan proyek terukur pasti lewat milestone dan stage-gates.",
+                wfPro5: "Estimasi waktu dan anggaran sangat andal untuk kontrak hukum.",
+                wfCon1: "Risiko salah perencanaan akibat spesifikasi awal yang terlalu abstrak.",
+                wfCon2: "Klien terbebani kewajiban merumuskan semua detail di awal proyek.",
+                wfCon3: "Biaya perbaikan bug/kesalahan sangat mahal jika ditemukan di akhir.",
+                wfCon4: "Sifat sekuensial kaku menghambat umpan balik dari pengguna riil.",
+                agPro1: "Cepat mengenali perubahan kebutuhan berkat umpan balik berkala.",
+                agPro2: "Identifikasi bug dan eror sangat cepat karena siklus uji pendek.",
+                agPro3: "Sangat fleksibel merespons dinamika pasar yang berubah-ubah.",
+                agPro4: "Risiko membangun produk yang salah jauh lebih rendah.",
+                agPro5: "Motivasi dan rasa kepemilikan tim sangat tinggi lewat swa-kelola.",
+                agCon1: "Sering berbenturan dengan budaya perusahaan konvensional yang kaku.",
+                agCon2: "Keberhasilan sangat bergantung pada kedisiplinan dan kompetensi tim.",
+                agCon3: "Membutuhkan alokasi waktu dan keterlibatan intensif dari klien/PO.",
+                agCon4: "Sulit memprediksi total biaya dan durasi pasti di awal proyek.",
+                modelTag: "Mesin Keputusan Ilmiah",
+                assessHeading: "Pemilih Metodologi Proyek 2-Tahap",
+                assessSubheading: "Selesaikan Filter Knockout Tahap 1, lalu beri skor pada 15 Kriteria Empiris di 5 Dimensi.",
+                btnPresetSaaS: "Preset: Aplikasi Web",
+                btnPresetGov: "Preset: Regulasi/Infra",
+                btnReset: "Reset",
+                koHeader: "Tahap 1: Filter Kriteria Knockout (K.O.)",
+                koTitle: "Penyaringan Larangan Penggunaan Agile",
+                koPass: "Lolos K.O. (Lanjut ke Tahap 2)",
+                koFail: "K.O. Terpicu → Wajib Menggunakan Waterfall",
+                koDesc: "Berdasarkan Thesing et al. (2021), jika SALAH SATU kondisi di bawah ini terpenuhi, metode agile tidak dapat diterapkan sebagai metode utama:",
+                ko1Title: "Solusi Tidak Dapat Dipecah (Non-Decomposable)",
+                ko1Desc: "Solusi tidak bisa dibuat per bagian bertahap; pembuatan purwarupa/prototipe tidak memungkinkan.",
+                ko2Title: "Proyek "One-Shot Game" (Sekali Jadi)",
+                ko2Desc: "Perubahan berulang dilarang secara teknis/hukum atau berbiaya mustahil (contoh: konstruksi gedung, relokasi pabrik fisik).",
+                ko3Title: "Risiko Keselamatan Kritis / Real-Time",
+                ko3Desc: "Risiko operasional menyangkut nyawa/keamanan kritis melarang pendekatan uji coba; audit ketat mutlak.",
+                ko4Title: "Sponsor/Manajemen Menolak Agile",
+                ko4Desc: "Pimpinan eksekutif atau sponsor proyek menolak filosofi desentralisasi dan swa-kelola agile.",
+                ko5Title: "Organisasi Tidak Mampu Menerima Inkrement",
+                ko5Desc: "Klien tidak memiliki kapasitas untuk meninjau dan memanfaatkan rilis bertahap secara rutin.",
+                step2Header: "Tahap 2: Matriks Penilaian Empiris",
+                step2Title: "Evaluasi 15 Kriteria di 5 Dimensi Proyek",
+                scoringGuide: "Skor: 0 = Sangat Cocok Agile | 2 = Seimbang / Hibrida | 4 = Sangat Cocok Waterfall",
+                critCat1: "Ruang Lingkup, Kualitas & Risiko (~Bobot 36%)",
+                critCat2: "Konteks & Budaya Organisasi (~Bobot 27%)",
+                critCat3: "Karakteristik Tim Proyek (~Bobot 21%)",
+                critCat4: "Kebutuhan Waktu (~Bobot 8%)",
+                critCat5: "Anggaran & Biaya (~Bobot 8%)",
+                c1_title: "1.1 Stabilitas & Rendahnya Dinamika Kebutuhan Klien",
+                c2_title: "1.2 Kejelasan Dokumen & Tanda Tangan Spesifikasi",
+                c3_title: "1.3 Ketergantungan Antar Bagian & Kompleksitas Produk",
+                c4_title: "2.1 Kontrol Hierarkis Sentral vs Otonomi Tim",
+                c5_title: "2.2 Frekuensi Keterlibatan Pemangku Kepentingan",
+                c6_title: "2.3 Nilai Kepatuhan Prosedur Formal vs Eksperimentasi",
+                c7_title: "3.1 Kemampuan Swa-kelola & Fleksibilitas Anggota Tim",
+                c8_title: "3.2 Tingkat Pengalaman Agile & Kemahiran Teknis Tim",
+                c9_title: "3.3 Ukuran Tim & Penyebaran Geografis",
+                c10_title: "4.1 Kepatuhan Mutlak pada Tenggat Tanggal Akhir",
+                c11_title: "4.2 Keharusan Prediksi Durasi Proyek Sejak Awal",
+                c12_title: "4.3 Siklus Rilis Tunggal Panjang (Monolitik)",
+                c13_title: "5.1 Batasan Biaya Tetap (Fixed-Cost) Mutlak",
+                c14_title: "5.2 Rencana Alih Daya Vendor Harga Tetap",
+                c15_title: "5.3 Kemudahan Estimasi Biaya & Dampak Perubahan",
+                agileSide: "0 (Sangat dinamis / sering berubah)",
+                waterfallSide: "4 (Sangat stabil & jelas di awal)",
+                c2_left: "0 (Kebutuhan ditemukan lewat prototipe)",
+                c2_right: "4 (Spesifikasi tertulis wajib ditandatangani)",
+                c3_left: "0 (Modular & inkremental independen)",
+                c3_right: "4 (Ketergantungan fase sekuensial kaku)",
+                c4_left: "0 (Otonom, PO berwenang penuh)",
+                c4_right: "4 (Kontrol hierarki terpusat ketat)",
+                c5_left: "0 (Kolaborasi mingguan berkelanjutan)",
+                c5_right: "4 (Persetujuan hanya di awal & akhir)",
+                c6_left: "0 (Eksperimen & keamanan psikologis)",
+                c6_right: "4 (Kepatuhan ketat gerbang milestone)",
+                c7_left: "0 (Sangat proaktif & mandiri)",
+                c7_right: "4 (Membutuhkan arahan instruksi jelas)",
+                c8_left: "0 (Sangat mahir agile & senior)",
+                c8_right: "4 (Pemula dalam agile / terbiasa tradisional)",
+                c9_left: "0 (Tim kecil ≤ 10 satu lokasi)",
+                c9_right: "4 (Tim besar > 10 tersebar global)",
+                resTag: "Rekomendasi Analitis",
+                resTitle: "Sintesis Keputusan Metodologi Proyek",
+                btnPrint: "Cetak / Ekspor PDF",
+                scoreLabel: "Indeks Waterfall",
+                radarTitle: "Radar Keselarasan 5 Dimensi",
+                radarSub: "Sisi luar (4.0) = Waterfall Penuh | Titik pusat (0.0) = Agile Penuh",
+                actionPlanTitle: "Peta Jalan Strategi Implementasi",
+                noteTitle: "Catatan Ketegasan Ilmiah:",
+                noteDesc: " Sesuai riset Thesing et al., tidak ada metodologi yang merupakan peluru perak (silver bullet). Jika kriteria proyek berubah di tengah jalan, evaluasi ulang matriks ini.",
+                footerRef: "Referensi: Theo Thesing, Carsten Feldmann, Martin Burchardt (2021). Agile versus Waterfall Project Management: Decision Model for Selecting the Appropriate Approach to a Project. Procedia Computer Science 181, 746–756.",
+                footerSub: "Sistem Rekayasa Desain & Pengambil Keputusan Interaktif · Dua Bahasa (EN / ID)"
+            }
+        };
+
+        let currentLang = 'en';
+        let radarChartInstance = null;
+
+        const WEIGHTS = {
+            d1: 0.36,
+            d2: 0.27,
+            d3: 0.21,
+            d4: 0.08,
+            d5: 0.08
+        };
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            const targetPane = document.getElementById(`tab-${tabId}`);
+            if (targetPane) {
+                targetPane.classList.remove('hidden');
+                gsap.fromTo(targetPane, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" });
+            }
+
+            document.querySelectorAll(`[data-tab="${tabId}"]`).forEach(btn => btn.classList.add('active'));
+
+            if (tabId === 'decision') {
+                runEvaluation();
+            }
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            
+            document.getElementById('lang-en').className = lang === 'en' 
+                ? 'px-2.5 py-1 rounded-lg text-xs font-semibold text-white bg-indigo-600 transition-all'
+                : 'px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all';
+                
+            document.getElementById('lang-id').className = lang === 'id' 
+                ? 'px-2.5 py-1 rounded-lg text-xs font-semibold text-white bg-indigo-600 transition-all'
+                : 'px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all';
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (i18n[lang] && i18n[lang][key]) {
+                    el.innerHTML = i18n[lang][key];
+                }
+            });
+
+            runEvaluation();
+        }
+
+        function updateCriteriaValue(critId) {
+            const val = document.getElementById(critId).value;
+            const labelEl = document.getElementById(`val-${critId}`);
+            if (labelEl) {
+                const terms = {
+                    en: ['0 - Pure Agile', '1 - Agile Leaning', '2 - Moderate / Hybrid', '3 - Waterfall Leaning', '4 - Pure Waterfall'],
+                    id: ['0 - Murni Agile', '1 - Cenderung Agile', '2 - Moderat / Hibrida', '3 - Cenderung Waterfall', '4 - Murni Waterfall']
+                };
+                labelEl.textContent = terms[currentLang][val] || val;
+            }
+            runEvaluation();
+        }
+
+        function runEvaluation() {
+            const ko1 = document.getElementById('ko1').checked;
+            const ko2 = document.getElementById('ko2').checked;
+            const ko3 = document.getElementById('ko3').checked;
+            const ko4 = document.getElementById('ko4').checked;
+            const ko5 = document.getElementById('ko5').checked;
+            const anyKoTriggered = ko1 || ko2 || ko3 || ko4 || ko5;
+
+            const koBadge = document.getElementById('ko-status-badge');
+            if (anyKoTriggered) {
+                koBadge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-rose-950 text-rose-300 border border-rose-700/60 animate-pulse';
+                koBadge.textContent = i18n[currentLang].koFail;
+            } else {
+                koBadge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-emerald-950 text-emerald-300 border border-emerald-700/60';
+                koBadge.textContent = i18n[currentLang].koPass;
+            }
+
+            const c = {};
+            for (let i = 1; i <= 15; i++) {
+                c[`c${i}`] = parseFloat(document.getElementById(`c${i}`).value) || 0;
+            }
+
+            const d1Avg = (c.c1 + c.c2 + c.c3) / 3;
+            const d2Avg = (c.c4 + c.c5 + c.c6) / 3;
+            const d3Avg = (c.c7 + c.c8 + c.c9) / 3;
+            const d4Avg = (c.c10 + c.c11 + c.c12) / 3;
+            const d5Avg = (c.c13 + c.c14 + c.c15) / 3;
+
+            document.getElementById('score-d1').textContent = `Avg: ${d1Avg.toFixed(1)} / 4`;
+            document.getElementById('score-d2').textContent = `Avg: ${d2Avg.toFixed(1)} / 4`;
+            document.getElementById('score-d3').textContent = `Avg: ${d3Avg.toFixed(1)} / 4`;
+            document.getElementById('score-d4').textContent = `Avg: ${d4Avg.toFixed(1)} / 4`;
+            document.getElementById('score-d5').textContent = `Avg: ${d5Avg.toFixed(1)} / 4`;
+
+            const weightedScore = (d1Avg * WEIGHTS.d1) +
+                                  (d2Avg * WEIGHTS.d2) +
+                                  (d3Avg * WEIGHTS.d3) +
+                                  (d4Avg * WEIGHTS.d4) +
+                                  (d5Avg * WEIGHTS.d5);
+
+            let waterfallPct = Math.round((weightedScore / 4) * 100);
+            let agilePct = 100 - waterfallPct;
+
+            if (anyKoTriggered) {
+                waterfallPct = Math.max(waterfallPct, 90);
+                agilePct = 100 - waterfallPct;
+            }
+
+            renderResultsBanner(anyKoTriggered, weightedScore, waterfallPct, agilePct, { d1Avg, d2Avg, d3Avg, d4Avg, d5Avg });
+            renderRadarChart([d1Avg, d2Avg, d3Avg, d4Avg, d5Avg]);
+        }
+
+        function renderResultsBanner(koTriggered, score, wfPct, agPct, dims) {
+            const pill = document.getElementById('verdict-pill');
+            const heading = document.getElementById('verdict-heading');
+            const summary = document.getElementById('verdict-summary');
+            const scoreEl = document.getElementById('verdict-score');
+            const subtextEl = document.getElementById('verdict-subtext');
+            const strategyContainer = document.getElementById('strategy-points');
+
+            scoreEl.textContent = `${wfPct}%`;
+            subtextEl.textContent = `Agile Index: ${agPct}% | Waterfall Index: ${wfPct}%`;
+
+            let strategies = [];
+
+            if (koTriggered) {
+                pill.className = 'inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-950 text-rose-300 border border-rose-700/60';
+                pill.textContent = currentLang === 'en' ? 'KO Triggered: Classical Waterfall Required' : 'KO Terpicu: Wajib Menggunakan Waterfall';
+                heading.textContent = currentLang === 'en' ? 'Classical Waterfall Methodology' : 'Metodologi Klasik Waterfall Wajib Digunakan';
+                summary.textContent = currentLang === 'en' 
+                    ? 'One or more Stage 1 Knockout exclusion criteria were met (e.g. non-decomposable solution, one-shot constraints, or critical life-safety compliance). An overarching iterative agile process is non-viable.'
+                    : 'Satu atau lebih kriteria eliminasi Knockout Tahap 1 terpicu (misal solusi non-inkremental, batasan sekali jadi, atau risiko keselamatan kritis). Pendekatan agile utama tidak dapat diterapkan.';
+
+                strategies = currentLang === 'en' ? [
+                    'Implement rigorous Stage-Gate governance with clear milestone sign-offs.',
+                    'Invest heavily in upfront architectural specification and vendor contract clarity.',
+                    'Confine agile principles (Kanban task boards) strictly to isolated internal sub-teams.'
+                ] : [
+                    'Terapkan tata kelola Stage-Gate ketat dengan persetujuan milestone formal.',
+                    'Investasikan waktu di awal untuk spesifikasi arsitektur dan kepastian kontrak vendor.',
+                    'Batasi prinsip agile (papan Kanban) hanya untuk sub-tim internal tertutup.'
+                ];
+            } else if (wfPct >= 65) {
+                pill.className = 'inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-950 text-blue-300 border border-blue-700/60';
+                pill.textContent = currentLang === 'en' ? 'Plan-Driven Fit: Waterfall' : 'Kesesuaian Kuat: Waterfall';
+                heading.textContent = currentLang === 'en' ? 'Waterfall / Plan-Driven Approach' : 'Pendekatan Waterfall / Berbasis Rencana';
+                summary.textContent = currentLang === 'en' 
+                    ? 'Your project characteristics exhibit high requirement clarity, stable organizational governance, and predictable delivery horizons, making a structured Waterfall approach most efficient.'
+                    : 'Karakteristik proyek Anda menunjukkan kejelasan kebutuhan yang tinggi, tata kelola stabil, dan jadwal terprediksi, sehingga Waterfall menjadi pilihan paling efisien.';
+
+                strategies = currentLang === 'en' ? [
+                    'Establish detailed baseline WBS (Work Breakdown Structure) and critical path schedules.',
+                    'Formalize change request management to prevent scope creep without budget approval.',
+                    'Use milestone reviews to track progress against predictive capacity estimates.'
+                ] : [
+                    'Susun WBS (Work Breakdown Structure) detail dan jadwal jalur kritis (critical path).',
+                    'Formalisasikan manajemen Change Request agar perubahan ruang lingkup tidak membengkak tanpa biaya.',
+                    'Gunakan evaluasi milestone untuk memantau kemajuan sesuai kapasitas terencana.'
+                ];
+            } else if (agPct >= 65) {
+                pill.className = 'inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-950 text-emerald-300 border border-emerald-700/60';
+                pill.textContent = currentLang === 'en' ? 'Value-Driven Fit: Agile' : 'Kesesuaian Kuat: Agile';
+                heading.textContent = currentLang === 'en' ? 'Agile (Scrum / Kanban) Approach' : 'Pendekatan Agile (Scrum / Kanban)';
+                summary.textContent = currentLang === 'en' 
+                    ? 'High requirement uncertainty, active stakeholder collaboration, and an autonomous team strongly favor an iterative Agile cadence with rapid prototype releases.'
+                    : 'Ketidakpastian kebutuhan yang tinggi, kolaborasi aktif pemangku kepentingan, dan tim mandiri sangat mendukung penerapan Agile dengan rilis bertahap cepat.';
+
+                strategies = currentLang === 'en' ? [
+                    'Establish 2-week Sprint cycles with automated CI/CD and daily test-driven integration.',
+                    'Empower a dedicated Product Owner with full authority over backlog prioritization.',
+                    'Conduct Sprint Reviews directly with end-users to validate increments against true market needs.'
+                ] : [
+                    'Terapkan siklus Sprint 2 mingguan dengan otomatisasi CI/CD dan pengujian harian.',
+                    'Beri wewenang penuh kepada Product Owner untuk memprioritaskan backlog.',
+                    'Lakukan Sprint Review langsung bersama pengguna akhir untuk memvalidasi nilai produk.'
+                ];
+            } else {
+                pill.className = 'inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-950 text-amber-300 border border-amber-700/60';
+                pill.textContent = currentLang === 'en' ? 'Bimodal Fit: Hybrid Model' : 'Kesesuaian Bimodal: Model Hibrida';
+                heading.textContent = currentLang === 'en' ? 'Hybrid / Bimodal Approach Recommended' : 'Disarankan Menggunakan Pendekatan Hibrida';
+                summary.textContent = currentLang === 'en' 
+                    ? 'Your project benefits from a Water-Scrum-Fall synthesis: holistic milestone & budget planning at the enterprise level, combined with agile Scrum execution for technical sub-modules.'
+                    : 'Proyek Anda paling optimal menggunakan sintesis Water-Scrum-Fall: tata kelola dan anggaran makro berbasis Waterfall, dikombinasikan dengan eksekusi teknis berbasis Scrum.';
+
+                strategies = currentLang === 'en' ? [
+                    'Use Waterfall Stage-Gates for overarching project charter, architecture blueprint, and legal contracting.',
+                    'Execute software/feature development in 2-3 week Scrum sprints with continuous integration.',
+                    'Bridge enterprise reporting via milestone-mapped Epic releases and burn-up charts.'
+                ] : [
+                    'Gunakan Stage-Gate Waterfall untuk perencanaan makro, arsitektur dasar, dan kontrak hukum.',
+                    'Jalankan pengembangan fitur dalam sprint Scrum 2-3 minggu dengan integrasi berkala.',
+                    'Jembatani pelaporan manajemen menggunakan rilis Epic bertahap yang dipetakan ke milestone.'
+                ];
+            }
+
+            strategyContainer.innerHTML = strategies.map((s, idx) => `
+                <div class="p-3 rounded-xl bg-slate-950/70 border border-slate-800 flex items-start gap-2.5">
+                    <span class="w-5 h-5 rounded-full bg-indigo-600/30 text-indigo-400 font-mono flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5">${idx + 1}</span>
+                    <span class="text-slate-300 leading-normal">${s}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderRadarChart(dataPoints) {
+            const ctx = document.getElementById('radarChart');
+            if (!ctx) return;
+
+            const labels = currentLang === 'en' 
+                ? ['D1: Scope (36%)', 'D2: Organization (27%)', 'D3: Team (21%)', 'D4: Time (8%)', 'D5: Cost (8%)']
+                : ['D1: Ruang Lingkup (36%)', 'D2: Organisasi (27%)', 'D3: Tim (21%)', 'D4: Waktu (8%)', 'D5: Biaya (8%)'];
+
+            if (radarChartInstance) {
+                radarChartInstance.data.labels = labels;
+                radarChartInstance.data.datasets[0].data = dataPoints;
+                radarChartInstance.data.datasets[0].label = currentLang === 'en' ? 'Project Alignment' : 'Keselarasan Proyek';
+                radarChartInstance.update();
+                return;
+            }
+
+            radarChartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: currentLang === 'en' ? 'Project Alignment' : 'Keselarasan Proyek',
+                        data: dataPoints,
+                        fill: true,
+                        backgroundColor: 'rgba(99, 102, 241, 0.25)',
+                        borderColor: '#6366f1',
+                        pointBackgroundColor: '#10b981',
+                        pointBorderColor: '#ffffff',
+                        pointHoverBackgroundColor: '#ffffff',
+                        pointHoverBorderColor: '#6366f1',
+                        borderWidth: 2,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(255, 255, 255, 0.08)' },
+                            grid: { color: 'rgba(255, 255, 255, 0.08)' },
+                            pointLabels: {
+                                color: '#94a3b8',
+                                font: { size: 10, family: '"Plus Jakarta Sans", sans-serif' }
+                            },
+                            ticks: {
+                                display: false,
+                                min: 0,
+                                max: 4,
+                                stepSize: 1
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        function loadPreset(type) {
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById(`ko${i}`).checked = false;
+            }
+
+            if (type === 'software') {
+                const values = [0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 1];
+                for (let i = 1; i <= 15; i++) {
+                    document.getElementById(`c${i}`).value = values[i - 1];
+                    updateCriteriaValue(`c${i}`);
+                }
+            } else if (type === 'construction') {
+                const values = [4, 4, 4, 4, 3, 4, 3, 4, 4, 4, 4, 4, 4, 4, 4];
+                for (let i = 1; i <= 15; i++) {
+                    document.getElementById(`c${i}`).value = values[i - 1];
+                    updateCriteriaValue(`c${i}`);
+                }
+            }
+            runEvaluation();
+        }
+
+        function resetAssessment() {
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById(`ko${i}`).checked = false;
+            }
+            for (let i = 1; i <= 15; i++) {
+                document.getElementById(`c${i}`).value = 2;
+                updateCriteriaValue(`c${i}`);
+            }
+            runEvaluation();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            for (let i = 1; i <= 15; i++) {
+                updateCriteriaValue(`c${i}`);
+            }
+            runEvaluation();
+        });
+    </script>
+</body>
+</html>
